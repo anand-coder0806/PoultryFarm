@@ -289,7 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
     submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Sending Inquiry...';
     
     try {
-      const response = await fetch('/api/orders', {
+      const response = await fetch('https://poultryfarm-backend.onrender.com/api/orders', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
