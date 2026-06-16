@@ -1,0 +1,26 @@
+[
+  {
+    "id": "mqge40cn4ilf7",
+    "name": "Test User",
+    "phone": "9876543210",
+    "details": "test",
+    "message": "Hello",
+    "timestamp": "2026-06-16T08:38:31.367Z"
+  },
+  {
+    "id": "mqgecpn7j5zn1",
+    "name": "Anand Bhagat",
+    "phone": "8767423857",
+    "details": "300",
+    "message": "dff",
+    "timestamp": "2026-06-16T08:45:17.396Z"
+  },
+  {
+    "id": "mqgef3j76qqkq",
+    "name": "vimal Bhagta",
+    "phone": "9422448619",
+    "details": "1000",
+    "message": "vimal bhagat birds pahije",
+    "timestamp": "2026-06-16T08:47:08.707Z"
+  }
+]
