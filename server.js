@@ -41,6 +41,7 @@ const writeOrders = (orders) => {
 
 // API: Save a new order/inquiry
 app.post('/api/orders', (req, res) => {
+  console.log('NEW INQUIRY:', req.body);
   const { name, phone, details, message } = req.body;
 
   if (!name || !phone || !details || !message) {
