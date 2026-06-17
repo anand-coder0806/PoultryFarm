@@ -5,38 +5,39 @@ const mongoose = require('mongoose');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-console.log('MONGODB_URI exists:', !!process.env.MONGODB_URI);
 // MongoDB Connection
+console.log('MONGODB_URI exists:', !!process.env.MONGODB_URI);
+
 mongoose.connect(process.env.MONGODB_URI)
-.then(() => {
-console.log('✅ MongoDB Connected');
-})
-.catch((err) => {
-console.error('❌ MongoDB Error:', err);
-});
+  .then(() => {
+    console.log('✅ MongoDB Connected');
+  })
+  .catch((err) => {
+    console.error('❌ MongoDB Error:', err);
+  });
 
 // Order Schema
 const orderSchema = new mongoose.Schema({
-name: {
-type: String,
-required: true
-},
-phone: {
-type: String,
-required: true
-},
-details: {
-type: String,
-required: true
-},
-message: {
-type: String,
-required: true
-},
-timestamp: {
-type: Date,
-default: Date.now
-}
+  name: {
+    type: String,
+    required: true
+  },
+  phone: {
+    type: String,
+    required: true
+  },
+  details: {
+    type: String,
+    required: true
+  },
+  message: {
+    type: String,
+    required: true
+  },
+  timestamp: {
+    type: Date,
+    default: Date.now
+  }
 });
 
 const Order = mongoose.model('Order', orderSchema);
@@ -45,121 +46,97 @@ const Order = mongoose.model('Order', orderSchema);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static frontend files
+// Serve static files
 app.use(express.static(__dirname));
 
-// Save New Inquiry
+// Create New Inquiry
 app.post('/api/orders', async (req, res) => {
-try {
+  try {
+    console.log('NEW INQUIRY:', req.body);
 
-```
-console.log('NEW INQUIRY:', req.body);
+    const { name, phone, details, message } = req.body;
 
-const { name, phone, details, message } = req.body;
+    if (!name || !phone || !details || !message) {
+      return res.status(400).json({
+        error: 'Name, Phone, Requirement Details and Message are required.'
+      });
+    }
 
-if (!name || !phone || !details || !message) {
-  return res.status(400).json({
-    error: 'Name, Phone, Requirement Details and Message are required.'
-  });
-}
+    const order = await Order.create({
+      name: name.trim(),
+      phone: phone.trim(),
+      details: details.trim(),
+      message: message.trim()
+    });
 
-const order = await Order.create({
-  name: name.trim(),
-  phone: phone.trim(),
-  details: details.trim(),
-  message: message.trim()
-});
+    res.status(201).json({
+      message: 'Order submitted successfully',
+      order
+    });
 
-res.status(201).json({
-  message: 'Order submitted successfully',
-  order
-});
-```
+  } catch (error) {
+    console.error('SAVE ERROR:', error);
 
-} catch (error) {
-
-```
-console.error(error);
-
-res.status(500).json({
-  error: 'Failed to save inquiry'
-});
-```
-
-}
+    res.status(500).json({
+      error: 'Failed to save inquiry'
+    });
+  }
 });
 
 // Get All Inquiries
 app.get('/api/orders', async (req, res) => {
-try {
+  try {
+    const orders = await Order.find().sort({ timestamp: -1 });
 
-```
-const orders = await Order.find()
-  .sort({ timestamp: -1 });
+    res.json(orders);
 
-res.json(orders);
-```
+  } catch (error) {
+    console.error('FETCH ERROR:', error);
 
-} catch (error) {
-
-```
-console.error(error);
-
-res.status(500).json({
-  error: 'Failed to fetch inquiries'
-});
-```
-
-}
+    res.status(500).json({
+      error: 'Failed to fetch inquiries'
+    });
+  }
 });
 
 // Delete Inquiry
 app.delete('/api/orders/:id', async (req, res) => {
-try {
+  try {
+    const deletedOrder = await Order.findByIdAndDelete(req.params.id);
 
-```
-const deletedOrder = await Order.findByIdAndDelete(req.params.id);
+    if (!deletedOrder) {
+      return res.status(404).json({
+        error: 'Inquiry not found'
+      });
+    }
 
-if (!deletedOrder) {
-  return res.status(404).json({
-    error: 'Inquiry not found'
-  });
-}
+    res.json({
+      message: 'Inquiry deleted successfully'
+    });
 
-res.json({
-  message: 'Inquiry deleted successfully'
-});
-```
+  } catch (error) {
+    console.error('DELETE ERROR:', error);
 
-} catch (error) {
-
-```
-console.error(error);
-
-res.status(500).json({
-  error: 'Failed to delete inquiry'
-});
-```
-
-}
+    res.status(500).json({
+      error: 'Failed to delete inquiry'
+    });
+  }
 });
 
 // Frontend Routes
 app.use((req, res, next) => {
-if (req.path.startsWith('/api/')) {
-return next();
-}
+  if (req.path.startsWith('/api/')) {
+    return next();
+  }
 
-res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Start Server
 app.listen(PORT, '0.0.0.0', () => {
-
-console.log('\n==================================================');
-console.log(' Anand Sagar Poultry Farm Backend is running!');
-console.log(` Local URL:    http://localhost:${PORT}`);
-console.log(` Admin Panel:  http://localhost:${PORT}/admin.html`);
-console.log('==================================================\n');
-
+  console.log('\n==================================================');
+  console.log(' Anand Sagar Poultry Farm Backend is running!');
+  console.log(` Local URL:    http://localhost:${PORT}`);
+  console.log(` Admin Panel:  http://localhost:${PORT}/admin.html`);
+  console.log('==================================================\n');
 });
