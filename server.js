@@ -22,8 +22,9 @@ const client = twilio(
   process.env.TWILIO_ACCOUNT_SID,
   process.env.TWILIO_AUTH_TOKEN
 );
-console.log('FROM =', process.env.TWILIO_WHATSAPP_NUMBER);
-console.log('TO =', process.env.ADMIN_WHATSAPP);
+console.log('FROM =', JSON.stringify(process.env.TWILIO_WHATSAPP_NUMBER));
+console.log('TO =', JSON.stringify(process.env.ADMIN_WHATSAPP));
+console.log('SID =', JSON.stringify(process.env.TWILIO_ACCOUNT_SID));
 
 // Order Schema
 const orderSchema = new mongoose.Schema({
