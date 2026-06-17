@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+console.log('MONGODB_URI exists:', !!process.env.MONGODB_URI);
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI)
 .then(() => {
