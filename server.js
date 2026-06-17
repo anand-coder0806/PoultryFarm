@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
+const twilio = require('twilio');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -15,6 +16,12 @@ mongoose.connect(process.env.MONGODB_URI)
   .catch((err) => {
     console.error('❌ MongoDB Error:', err);
   });
+
+// Twilio Client
+const client = twilio(
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
+);
 
 // Order Schema
 const orderSchema = new mongoose.Schema({
@@ -68,6 +75,28 @@ app.post('/api/orders', async (req, res) => {
       details: details.trim(),
       message: message.trim()
     });
+
+    // WhatsApp Notification
+    try {
+      await client.messages.create({
+        from: process.env.TWILIO_WHATSAPP_NUMBER,
+        to: process.env.ADMIN_WHATSAPP,
+        body:
+`🐔 New Poultry Inquiry
+
+Name: ${order.name}
+Phone: ${order.phone}
+Quantity: ${order.details}
+Message: ${order.message}
+
+Time: ${new Date(order.timestamp).toLocaleString()}`
+      });
+
+      console.log('✅ WhatsApp notification sent');
+
+    } catch (whatsappError) {
+      console.error('❌ WhatsApp Error:', whatsappError.message);
+    }
 
     res.status(201).json({
       message: 'Order submitted successfully',
